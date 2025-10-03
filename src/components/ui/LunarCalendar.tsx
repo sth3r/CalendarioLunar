@@ -111,9 +111,10 @@ const LunarCalendar = () => {
     });
   };
 
-  const goToToday = () => setCurrentDate(today);
-
-  const dayNames = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"];
+  const goToToday = () => {
+    setCurrentDate(today);
+    setSelectedDate(today);
+  };
 
   return (
     <Card className="max-w-4xl mx-auto relative z-10 bg-black/60 backdrop-blur-md border border-purple-700 p-4">
@@ -160,16 +161,11 @@ const LunarCalendar = () => {
           })}
         </div>
 
-        {/* Bloco de anúncio AdSense */}
-        <div className="my-4 text-center">
-          <ins className="adsbygoogle"
-               style={{ display: "block" }}
-               data-ad-client="ca-pub-3729829871518422" // substitua pelo seu ID
-               data-ad-slot="1234567890" // seu slot do anúncio
-               data-ad-format="auto"
-               data-full-width-responsive="true"></ins>
-          <Script>{`(adsbygoogle = window.adsbygoogle || []).push({});`}</Script>
-        </div>
+        {selectedDate && (
+          <div className="mt-4 text-center text-purple-200">
+            <strong>{selectedDate.toLocaleDateString("pt-BR")}</strong>: {getLunarPhase(selectedDate).lunarPhaseName} {lunarEmojis[getLunarPhase(selectedDate).lunarPhase]}
+          </div>
+        )}
 
         <footer className="mt-4 text-center text-purple-300 text-sm border-t border-purple-700 pt-2">
           Desenvolvido por Esther Rodrigues &mdash; 🌙✨  
