@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "./card";
+import Script from "next/script";
 
 const lunarEmojis: Record<string, string> = {
   "new": "🌑",
@@ -43,19 +44,18 @@ const LunarCalendar = () => {
   const today = new Date();
   const [currentDate, setCurrentDate] = useState(today);
   const [calendarDays, setCalendarDays] = useState<CalendarDay[]>([]);
-  const [selectedDate, setSelectedDate] = useState<Date | null>(today);
   const [selectedMonth, setSelectedMonth] = useState(today.getMonth());
   const [selectedYear, setSelectedYear] = useState(today.getFullYear());
 
   const years = Array.from({ length: 21 }, (_, i) => 2020 + i);
-  const monthNames = ["Janeiro","Fevereiro","Março","Abril","Maio","Junho",
-                      "Julho","Agosto","Setembro","Outubro","Novembro","Dezembro"];
-  const dayNames = ["Dom","Seg","Ter","Qua","Qui","Sex","Sáb"];
+  const monthNames = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho",
+                      "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
 
   const generateCalendar = (date: Date) => {
     const year = date.getFullYear();
     const month = date.getMonth();
     const days: CalendarDay[] = [];
+
     const firstDayOfMonth = new Date(year, month, 1);
     const startDay = firstDayOfMonth.getDay();
     const daysInMonth = new Date(year, month + 1, 0).getDate();
@@ -92,6 +92,7 @@ const LunarCalendar = () => {
     setSelectedYear(currentDate.getFullYear());
   }, [currentDate]);
 
+  // Sincroniza selects com o calendário
   useEffect(() => {
     setCurrentDate(new Date(selectedYear, selectedMonth, 1));
   }, [selectedMonth, selectedYear]);
@@ -104,13 +105,20 @@ const LunarCalendar = () => {
     });
   };
 
-  const goToToday = () => {
-    setCurrentDate(today);
-    setSelectedDate(today);
-  };
+  const goToToday = () => setCurrentDate(today);
+
+  const dayNames = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"];
 
   return (
     <Card className="max-w-4xl mx-auto relative z-10 bg-black/60 backdrop-blur-md border border-purple-700 p-4">
+      {/* AdSense global script */}
+      <Script
+        strategy="afterInteractive"
+        src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"
+        data-ad-client="ca-pub-3729829871518422" // substitua pelo seu ID
+        crossOrigin="anonymous"
+      />
+
       <CardHeader className="flex flex-col sm:flex-row items-center justify-between gap-2 mb-2">
         <CardTitle className="text-2xl font-bold text-purple-200">
           Calendário Lunar - {currentDate.toLocaleDateString("pt-BR", { month: "long", year: "numeric" })}
@@ -134,31 +142,30 @@ const LunarCalendar = () => {
         </div>
 
         <div className="grid grid-cols-7 gap-2">
-          {calendarDays.map((day, idx) => {
-            const isSelected = selectedDate?.toDateString() === day.date.toDateString();
-            return (
-              <div
-                key={idx}
-                className={`flex flex-col items-center justify-center p-2 rounded-lg cursor-pointer
-                  ${day.isCurrentMonth ? "bg-black/40" : "opacity-40"}
-                  ${day.isToday ? "bg-purple-600 text-white font-bold" : ""}
-                  ${isSelected ? "ring-2 ring-purple-500" : ""}
-                  hover:bg-purple-700 hover:text-white transition`}
-                title={day.lunarPhaseName}
-                onClick={() => setSelectedDate(day.date)}
-              >
-                <span className="text-sm">{day.date.getDate()}</span>
-                <span className="text-2xl drop-shadow-[0_0_8px_rgba(255,255,200,0.8)]">{lunarEmojis[day.lunarPhase]}</span>
-              </div>
-            )
-          })}
+          {calendarDays.map((day, idx) => (
+            <div
+              key={idx}
+              className={`flex flex-col items-center justify-center p-2 rounded-lg
+                ${day.isCurrentMonth ? "bg-black/40" : "opacity-40"}
+                ${day.isToday ? "bg-purple-600 text-white font-bold" : ""}`}
+              title={day.lunarPhaseName}
+            >
+              <span className="text-sm">{day.date.getDate()}</span>
+              <span className="text-2xl drop-shadow-[0_0_8px_rgba(255,255,200,0.8)]">{lunarEmojis[day.lunarPhase]}</span>
+            </div>
+          ))}
         </div>
 
-        {selectedDate && (
-          <div className="mt-4 text-center text-purple-200">
-            <strong>{selectedDate.toLocaleDateString("pt-BR")}</strong>: {getLunarPhase(selectedDate).lunarPhaseName} {lunarEmojis[getLunarPhase(selectedDate).lunarPhase]}
-          </div>
-        )}
+        {/* Bloco de anúncio AdSense */}
+        <div className="my-4 text-center">
+          <ins className="adsbygoogle"
+               style={{ display: "block" }}
+               data-ad-client="ca-pub-3729829871518422" // substitua pelo seu ID
+               data-ad-slot="1234567890" // seu slot do anúncio
+               data-ad-format="auto"
+               data-full-width-responsive="true"></ins>
+          <Script>{`(adsbygoogle = window.adsbygoogle || []).push({});`}</Script>
+        </div>
 
         <footer className="mt-4 text-center text-purple-300 text-sm border-t border-purple-700 pt-2">
           Desenvolvido por Esther Rodrigues &mdash; 🌙✨  
