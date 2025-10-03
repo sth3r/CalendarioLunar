@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "./card";
-import Script from "next/script";
 
 const lunarEmojis: Record<string, string> = {
   "new": "🌑",
@@ -39,6 +38,13 @@ interface CalendarDay {
   lunarPhase: string;
   lunarPhaseName: string;
 }
+
+declare global {
+  interface Window {
+    adsbygoogle: Array<Record<string, unknown>>;
+  }
+}
+
 
 const LunarCalendar = () => {
   const today = new Date();
@@ -109,16 +115,17 @@ const LunarCalendar = () => {
 
   const dayNames = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"];
 
+  // Inserção do AdSense
+  useEffect(() => {
+    try {
+      (window.adsbygoogle = window.adsbygoogle || []).push({});
+    } catch (e) {
+      console.error("AdSense error", e);
+    }
+  }, []);
+
   return (
     <Card className="max-w-4xl mx-auto relative z-10 bg-black/60 backdrop-blur-md border border-purple-700 p-4">
-      {/* AdSense global script */}
-      <Script
-        strategy="afterInteractive"
-        src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"
-        data-ad-client="ca-pub-3729829871518422" // substitua pelo seu ID
-        crossOrigin="anonymous"
-      />
-
       <CardHeader className="flex flex-col sm:flex-row items-center justify-between gap-2 mb-2">
         <CardTitle className="text-2xl font-bold text-purple-200">
           Calendário Lunar - {currentDate.toLocaleDateString("pt-BR", { month: "long", year: "numeric" })}
@@ -156,15 +163,14 @@ const LunarCalendar = () => {
           ))}
         </div>
 
-        {/* Bloco de anúncio AdSense */}
+        {/* AdSense */}
         <div className="my-4 text-center">
           <ins className="adsbygoogle"
                style={{ display: "block" }}
-               data-ad-client="ca-pub-3729829871518422" // substitua pelo seu ID
-               data-ad-slot="1234567890" // seu slot do anúncio
+               data-ad-client="ca-pub-3729829871518422"
+               data-ad-slot="YYYYYY"
                data-ad-format="auto"
                data-full-width-responsive="true"></ins>
-          <Script>{`(adsbygoogle = window.adsbygoogle || []).push({});`}</Script>
         </div>
 
         <footer className="mt-4 text-center text-purple-300 text-sm border-t border-purple-700 pt-2">
