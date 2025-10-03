@@ -1,4 +1,4 @@
-import LunarCalendar from '@/components/ui/LunarCalendar';
+import LunarCalendar from '@/components/LunarCalendar';
 
 export default function Home() {
   return (
