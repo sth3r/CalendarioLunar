@@ -43,18 +43,19 @@ const LunarCalendar = () => {
   const today = new Date();
   const [currentDate, setCurrentDate] = useState(today);
   const [calendarDays, setCalendarDays] = useState<CalendarDay[]>([]);
+  const [selectedDate, setSelectedDate] = useState<Date | null>(today);
   const [selectedMonth, setSelectedMonth] = useState(today.getMonth());
   const [selectedYear, setSelectedYear] = useState(today.getFullYear());
 
   const years = Array.from({ length: 21 }, (_, i) => 2020 + i);
-  const monthNames = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho",
-                      "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
+  const monthNames = ["Janeiro","Fevereiro","Março","Abril","Maio","Junho",
+                      "Julho","Agosto","Setembro","Outubro","Novembro","Dezembro"];
+  const dayNames = ["Dom","Seg","Ter","Qua","Qui","Sex","Sáb"];
 
   const generateCalendar = (date: Date) => {
     const year = date.getFullYear();
     const month = date.getMonth();
     const days: CalendarDay[] = [];
-
     const firstDayOfMonth = new Date(year, month, 1);
     const startDay = firstDayOfMonth.getDay();
     const daysInMonth = new Date(year, month + 1, 0).getDate();
@@ -91,7 +92,6 @@ const LunarCalendar = () => {
     setSelectedYear(currentDate.getFullYear());
   }, [currentDate]);
 
-  // Sincroniza selects com o calendário
   useEffect(() => {
     setCurrentDate(new Date(selectedYear, selectedMonth, 1));
   }, [selectedMonth, selectedYear]);
@@ -104,13 +104,10 @@ const LunarCalendar = () => {
     });
   };
 
-  const goToToday = () => setCurrentDate(today);
-
-  const handleDateSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setCurrentDate(new Date(e.target.value));
+  const goToToday = () => {
+    setCurrentDate(today);
+    setSelectedDate(today);
   };
-
-  const dayNames = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"];
 
   return (
     <Card className="max-w-4xl mx-auto relative z-10 bg-black/60 backdrop-blur-md border border-purple-700 p-4">
@@ -122,8 +119,6 @@ const LunarCalendar = () => {
           <button onClick={() => navigateMonth("prev")} className="text-2xl px-3 py-1 rounded-lg hover:bg-purple-700 hover:text-white">←</button>
           <button onClick={goToToday} className="px-3 py-1 rounded-lg bg-purple-600 text-white hover:bg-purple-500">Hoje</button>
           <button onClick={() => navigateMonth("next")} className="text-2xl px-3 py-1 rounded-lg hover:bg-purple-700 hover:text-white">→</button>
-          {/* <input type="date" value={currentDate.toISOString().substring(0,10)} onChange={handleDateSelect} className="ml-2 p-1 rounded border border-purple-500 text-white bg-black"/> */}
-          {/* Seleção de mês e ano */}
           <select value={selectedMonth} onChange={e => setSelectedMonth(Number(e.target.value))} className="ml-2 p-1 rounded border border-purple-500 text-white bg-black">
             {monthNames.map((name, idx) => <option key={name} value={idx}>{name}</option>)}
           </select>
@@ -139,20 +134,31 @@ const LunarCalendar = () => {
         </div>
 
         <div className="grid grid-cols-7 gap-2">
-          {calendarDays.map((day, idx) => (
-            <div
-              key={idx}
-              className={`flex flex-col items-center justify-center p-2 rounded-lg
-                ${day.isCurrentMonth ? "bg-black/40" : "opacity-40"}
-                ${day.isToday ? "bg-purple-600 text-white font-bold" : ""}
-              `}
-              title={day.lunarPhaseName}
-            >
-              <span className="text-sm">{day.date.getDate()}</span>
-              <span className="text-2xl drop-shadow-[0_0_8px_rgba(255,255,200,0.8)]">{lunarEmojis[day.lunarPhase]}</span>
-            </div>
-          ))}
+          {calendarDays.map((day, idx) => {
+            const isSelected = selectedDate?.toDateString() === day.date.toDateString();
+            return (
+              <div
+                key={idx}
+                className={`flex flex-col items-center justify-center p-2 rounded-lg cursor-pointer
+                  ${day.isCurrentMonth ? "bg-black/40" : "opacity-40"}
+                  ${day.isToday ? "bg-purple-600 text-white font-bold" : ""}
+                  ${isSelected ? "ring-2 ring-purple-500" : ""}
+                  hover:bg-purple-700 hover:text-white transition`}
+                title={day.lunarPhaseName}
+                onClick={() => setSelectedDate(day.date)}
+              >
+                <span className="text-sm">{day.date.getDate()}</span>
+                <span className="text-2xl drop-shadow-[0_0_8px_rgba(255,255,200,0.8)]">{lunarEmojis[day.lunarPhase]}</span>
+              </div>
+            )
+          })}
         </div>
+
+        {selectedDate && (
+          <div className="mt-4 text-center text-purple-200">
+            <strong>{selectedDate.toLocaleDateString("pt-BR")}</strong>: {getLunarPhase(selectedDate).lunarPhaseName} {lunarEmojis[getLunarPhase(selectedDate).lunarPhase]}
+          </div>
+        )}
 
         <footer className="mt-4 text-center text-purple-300 text-sm border-t border-purple-700 pt-2">
           Desenvolvido por Esther Rodrigues &mdash; 🌙✨  

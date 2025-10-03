@@ -1,5 +1,3 @@
-"use client";
-
 import LunarCalendar from '@/components/ui/LunarCalendar';
 export default function Home() {
   return (
