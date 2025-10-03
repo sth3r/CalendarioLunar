@@ -164,7 +164,7 @@ const LunarCalendar = () => {
                data-ad-slot="1234567890" // seu slot do anúncio
                data-ad-format="auto"
                data-full-width-responsive="true"></ins>
-          <Script>{`(adsbygoogle = window.adsbygoogle || []).push({});`}</Script>
+          {/* <Script>{`(adsbygoogle = window.adsbygoogle || []).push({});`}</Script> */}
         </div>
 
         <footer className="mt-4 text-center text-purple-300 text-sm border-t border-purple-700 pt-2">
