@@ -40,8 +40,15 @@ interface CalendarDay {
 }
 
 const LunarCalendar = () => {
-  const [currentDate, setCurrentDate] = useState(new Date());
+  const today = new Date();
+  const [currentDate, setCurrentDate] = useState(today);
   const [calendarDays, setCalendarDays] = useState<CalendarDay[]>([]);
+  const [selectedMonth, setSelectedMonth] = useState(today.getMonth());
+  const [selectedYear, setSelectedYear] = useState(today.getFullYear());
+
+  const years = Array.from({ length: 21 }, (_, i) => 2020 + i);
+  const monthNames = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho",
+                      "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
 
   const generateCalendar = (date: Date) => {
     const year = date.getFullYear();
@@ -61,7 +68,7 @@ const LunarCalendar = () => {
       days.push({ date: d, isCurrentMonth: false, isToday: false, ...getLunarPhase(d) });
     }
 
-    const today = new Date();
+    // Mês atual
     for (let i = 1; i <= daysInMonth; i++) {
       const d = new Date(year, month, i);
       days.push({ date: d, isCurrentMonth: true, isToday: d.toDateString() === today.toDateString(), ...getLunarPhase(d) });
@@ -80,17 +87,24 @@ const LunarCalendar = () => {
 
   useEffect(() => {
     generateCalendar(currentDate);
+    setSelectedMonth(currentDate.getMonth());
+    setSelectedYear(currentDate.getFullYear());
   }, [currentDate]);
 
+  // Sincroniza selects com o calendário
+  useEffect(() => {
+    setCurrentDate(new Date(selectedYear, selectedMonth, 1));
+  }, [selectedMonth, selectedYear]);
+
   const navigateMonth = (direction: "prev" | "next") => {
-    setCurrentDate((prev) => {
+    setCurrentDate(prev => {
       const newDate = new Date(prev);
       newDate.setMonth(prev.getMonth() + (direction === "next" ? 1 : -1));
       return newDate;
     });
   };
 
-  const goToToday = () => setCurrentDate(new Date());
+  const goToToday = () => setCurrentDate(today);
 
   const handleDateSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     setCurrentDate(new Date(e.target.value));
@@ -108,15 +122,20 @@ const LunarCalendar = () => {
           <button onClick={() => navigateMonth("prev")} className="text-2xl px-3 py-1 rounded-lg hover:bg-purple-700 hover:text-white">←</button>
           <button onClick={goToToday} className="px-3 py-1 rounded-lg bg-purple-600 text-white hover:bg-purple-500">Hoje</button>
           <button onClick={() => navigateMonth("next")} className="text-2xl px-3 py-1 rounded-lg hover:bg-purple-700 hover:text-white">→</button>
-          <input type="date" value={currentDate.toISOString().substring(0,10)} onChange={handleDateSelect} className="ml-2 p-1 rounded border border-purple-500 text-white"/>
+          {/* <input type="date" value={currentDate.toISOString().substring(0,10)} onChange={handleDateSelect} className="ml-2 p-1 rounded border border-purple-500 text-white bg-black"/> */}
+          {/* Seleção de mês e ano */}
+          <select value={selectedMonth} onChange={e => setSelectedMonth(Number(e.target.value))} className="ml-2 p-1 rounded border border-purple-500 text-white bg-black">
+            {monthNames.map((name, idx) => <option key={name} value={idx}>{name}</option>)}
+          </select>
+          <select value={selectedYear} onChange={e => setSelectedYear(Number(e.target.value))} className="ml-2 p-1 rounded border border-purple-500 text-white bg-black">
+            {years.map(year => <option key={year} value={year}>{year}</option>)}
+          </select>
         </div>
       </CardHeader>
 
       <CardContent>
         <div className="grid grid-cols-7 gap-2 mb-4">
-          {dayNames.map(day => (
-            <div key={day} className="text-center font-medium text-purple-300 py-2">{day}</div>
-          ))}
+          {dayNames.map(day => <div key={day} className="text-center font-medium text-purple-300 py-2">{day}</div>)}
         </div>
 
         <div className="grid grid-cols-7 gap-2">
