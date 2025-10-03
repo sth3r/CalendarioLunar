@@ -1,5 +1,6 @@
-import LunarCalendar from '@/components/ui/LunarCalendar';
+"use client";
 
+import LunarCalendar from '@/components/ui/LunarCalendar';
 export default function Home() {
   return (
     <main className="flex min-h-screen items-center justify-center  from-indigo-950 via-purple-900 to-black">
